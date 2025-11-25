@@ -1,3 +1,33 @@
+# E-Commerce Club Website
+
+## Project Overview
+University E-Commerce Club management platform with event registration, admin panel, and content management.
+
+## Tech Stack
+- **Frontend**: React, TailwindCSS
+- **Backend**: FastAPI, PostgreSQL
+- **Authentication**: JWT, bcrypt
+- **Deployment**: Vercel (frontend), Railway (backend)
+- **Third-party**: Cloudinary, Resend
+
+## Team Members
+- [Name] - Backend Lead
+- [Name] - Frontend Lead
+- [Name] - DevOps & Integration
+- [Name] - Full-Stack Support
+
+## Setup Instructions
+(Will be filled in as we build)
+
+## Project Timeline
+Target Completion: December 15, 2024
+
+## Important Links
+- [Project Requirements](./docs/requirements.md)
+- [API Documentation] (Coming soon)
+
+
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
