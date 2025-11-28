@@ -25,13 +25,13 @@ function Navbar() {
           className="h-14"
         />
         <div className="space-x-6 text-lg">
-          {['Home', 'Events & Courses', 'About Us'].map((item, i) => (
+          {['Home', 'Events & Courses', 'About'].map((item, i) => (
             <Link
               key={i}
               to={
                 item === 'Home'
                   ? '/'
-                  : item === 'About Us'
+                  : item === 'About'
                   ? '/about'
                   : '/events-courses'
               }
