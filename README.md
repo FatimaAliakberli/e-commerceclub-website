@@ -17,7 +17,11 @@ University E-Commerce Club management platform with event registration, admin pa
 - [Name] - Full-Stack Support
 
 ## Setup Instructions
-(Will be filled in as we build)
+ 
+| Task | More details | Is it Done |
+|---|---|---|
+| Coudinary | Added it to the existing 'package-lock.json' and 'package.json' files in the frontend folder | Done |
+| Railway |  |  |
 
 ## Project Timeline
 Target Completion: December 15, 2024
