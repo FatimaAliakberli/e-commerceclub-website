@@ -44,3 +44,38 @@ Currently, two official plugins are available:
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+
+## Authentication API
+
+### Endpoints
+
+**Public (No Authentication):**
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login and get JWT token
+- `POST /api/auth/forgot-password` - Request password reset
+- `POST /api/auth/reset-password` - Reset password with token
+
+**Protected (Requires JWT Token):**
+- `GET /api/auth/me` - Get current user profile
+- `PUT /api/auth/me` - Update profile
+- `POST /api/auth/change-password` - Change password
+- `DELETE /api/auth/me` - Delete account
+
+### Authentication Flow
+1. Register: `POST /api/auth/register`
+2. Login: `POST /api/auth/login` (receive JWT token)
+3. Use token in header: `Authorization: Bearer <token>`
+4. Token expires after 30 minutes
+
+### Password Requirements
+- Minimum 8 characters
+- At least one uppercase letter
+- At least one lowercase letter
+- At least one number
+
+### Security Features
+- Passwords hashed with bcrypt
+- JWT tokens with 30-min expiration
+- Account lockout after 5 failed login attempts (15 min)
+- Password reset via email

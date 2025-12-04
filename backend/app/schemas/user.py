@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional
 from datetime import datetime
 
@@ -7,12 +7,13 @@ class UserBase(BaseModel):
     full_name: str
     phone_number: Optional[str] = None
     is_university_student: bool = True
-    id_code: Optional[str] = None  # Required for non-university users
+    id_code: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str
     
-    @validator('password')
+    @field_validator('password')
+    @classmethod
     def password_strength(cls, v):
         """Validate password strength"""
         if len(v) < 8:
@@ -25,10 +26,12 @@ class UserCreate(UserBase):
             raise ValueError('Password must contain at least one number')
         return v
     
-    @validator('id_code')
-    def validate_id_code(cls, v, values):
+    @field_validator('id_code')
+    @classmethod
+    def validate_id_code(cls, v, info):
         """Require ID code for non-university users"""
-        if not values.get('is_university_student') and not v:
+        # In Pydantic v2, use info.data to access other fields
+        if not info.data.get('is_university_student') and not v:
             raise ValueError('ID code is required for non-university users')
         return v
 
@@ -38,8 +41,7 @@ class UserResponse(UserBase):
     is_admin: bool
     created_at: datetime
     
-    class Config:
-        from_attributes = True  # Allows converting SQLAlchemy models to Pydantic
+    model_config = {"from_attributes": True}  # ✅ Pydantic v2 syntax
 
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
@@ -50,7 +52,8 @@ class PasswordChange(BaseModel):
     current_password: str
     new_password: str
     
-    @validator('new_password')
+    @field_validator('new_password')
+    @classmethod
     def password_strength(cls, v):
         if len(v) < 8:
             raise ValueError('Password must be at least 8 characters')
