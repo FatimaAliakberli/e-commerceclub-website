@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 from app.models import User, Event, Registration, Announcement, PageContent
-
+from app.routes import auth
+from routes import events, registrations
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -22,6 +23,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include authentication routes
+app.include_router(auth.router)
+app.include_router(events.router)  
+app.include_router(registrations.router)
 
 @app.get("/")
 async def root():
