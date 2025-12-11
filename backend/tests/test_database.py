@@ -4,28 +4,21 @@ from sqlalchemy import inspect
 
 def test_connection():
     """Test database connection"""
-    try:
-        # Test connection
-        with engine.connect() as conn:
-            print(" Database connection successful")
-        
-        # Check tables
-        inspector = inspect(engine)
-        tables = inspector.get_table_names()
-        print(f"\n Found {len(tables)} tables:")
-        for table in tables:
-            print(f"   - {table}")
-        
-        # Test session
-        db = SessionLocal()
-        print("\n Database session created successfully")
-        db.close()
-        
-        return True
-    except Exception as e:
-        print(f" Database test failed: {e}")
-        return False
+    # Test connection
+    with engine.connect() as conn:
+        assert conn is not None
 
+    # Check tables exist
+    inspector = inspect(engine)
+    tables = inspector.get_table_names()
+    assert isinstance(tables, list)
+    assert len(tables) > 0
+
+    # Test session creation
+    db = SessionLocal()
+    assert db is not None
+    db.close()
+    
 if __name__ == "__main__":
     print("Testing database setup...\n")
     if test_connection():

@@ -2,8 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 from app.models import User, Event, Registration, Announcement, PageContent
-from app.routes import auth
-from routes import events, registrations
+from app.routes import auth, events, registrations
 
 # Create tables
 Base.metadata.create_all(bind=engine)

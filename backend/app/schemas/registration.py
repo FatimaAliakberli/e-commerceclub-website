@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import Optional, ForwardRef
 from app.schemas.event import EventResponse
@@ -21,8 +21,7 @@ class RegistrationResponse(BaseModel):
     event_date: Optional[datetime] = None
     event_location: Optional[str] = None
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class RegistrationWithDetails(RegistrationResponse):
     """Full registration with user and event details"""
@@ -30,5 +29,4 @@ class RegistrationWithDetails(RegistrationResponse):
     user_email: str
     event: 'EventResponse'
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

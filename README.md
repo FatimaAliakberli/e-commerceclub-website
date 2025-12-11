@@ -79,3 +79,82 @@ If you are developing a production application, we recommend using TypeScript wi
 - JWT tokens with 30-min expiration
 - Account lockout after 5 failed login attempts (15 min)
 - Password reset via email
+
+## Event Management API
+
+### Public Endpoints
+
+**List Events**
+```http
+GET /api/events?page=1&page_size=10
+```
+
+**Get Event Details**
+```http
+GET /api/events/{event_id}
+```
+
+**Check Availability**
+```http
+GET /api/events/{event_id}/availability
+```
+
+### User Endpoints (Requires Authentication)
+
+**Register for Event**
+```http
+POST /api/registrations/
+Authorization: Bearer {token}
+
+{
+  "event_id": 1
+}
+```
+
+**View My Registrations**
+```http
+GET /api/registrations/my-registrations
+Authorization: Bearer {token}
+```
+
+**Cancel Registration**
+```http
+DELETE /api/registrations/{registration_id}
+Authorization: Bearer {token}
+```
+
+### Admin Endpoints (Requires Admin Role)
+
+**Create Event**
+```http
+POST /api/events/
+Authorization: Bearer {admin_token}
+
+{
+  "title": "Workshop Title",
+  "description": "Event description",
+  "event_date": "2024-12-20T18:00:00",
+  "event_time": "18:00",
+  "location": "Main Hall",
+  "capacity": 100,
+  "registration_deadline": "2024-12-18T23:59:59"
+}
+```
+
+**Update Event**
+```http
+PUT /api/events/{event_id}
+Authorization: Bearer {admin_token}
+```
+
+**Delete Event**
+```http
+DELETE /api/events/{event_id}
+Authorization: Bearer {admin_token}
+```
+
+**View Participants**
+```http
+GET /api/events/{event_id}/participants
+Authorization: Bearer {admin_token}
+```

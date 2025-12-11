@@ -10,6 +10,7 @@ from app.schemas.registration import RegistrationResponse
 from app.services.event_service import EventService
 from app.utils.dependencies import get_current_user, get_current_admin
 import math
+from pydantic import BaseModel, field_validator, ConfigDict
 
 router = APIRouter(prefix="/api/events", tags=["Events"])
 
