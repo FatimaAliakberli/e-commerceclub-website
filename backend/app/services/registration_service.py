@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
+from sqlalchemy.orm import selectinload
 from app.models.event import Event
 from app.models.registration import Registration
 from app.models.user import User
@@ -132,6 +133,28 @@ class RegistrationService:
         db.refresh(registration)
         
         return registration
+    
+    # --- NEW METHOD FOR ADMIN VIEW ---
+    @staticmethod
+    def get_registrants_by_event_id(
+        
+        db: Session,
+        event_id: int
+    ) -> List[Registration]:
+        """
+        ADMIN FUNCTION: Get a list of all active (non-cancelled) registrations for an event,
+        eagerly loading the related User object.
+        """
+        # Use .options(selectinload(Registration.user)) to tell SQLAlchemy
+        # to fetch the related 'user' data in the same transaction.
+        return db.query(Registration).options(
+            selectinload(Registration.user)
+        ).filter(
+            and_(
+                Registration.event_id == event_id,
+                Registration.is_cancelled.is_(False)
+            )
+        ).all()
     
     @staticmethod
     def get_user_registrations(
