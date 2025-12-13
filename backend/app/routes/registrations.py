@@ -4,12 +4,12 @@ from typing import List
 from app.database import get_db
 from app.models.user import User
 from app.schemas.registration import (
-    RegistrationCreate, RegistrationResponse
+    RegistrationCreate, RegistrationResponse, RegistrantListResponse
 )
 from app.services.registration_service import RegistrationService
-from app.utils.dependencies import get_current_user
+from app.utils.dependencies import get_current_user, get_current_admin
 
-router = APIRouter(prefix="/api/registrations", tags=["Registrations"])
+router = APIRouter(tags=["Registrations"])
 
 @router.post("/", response_model=RegistrationResponse, status_code=status.HTTP_201_CREATED)
 async def register_for_event(
@@ -55,6 +55,17 @@ async def cancel_registration(
         "message": "Registration cancelled successfully",
         "registration_id": registration.id
     }
+
+
+@router.get("/event/{event_id}/registrants", response_model=List[RegistrantListResponse]) 
+def get_registrants_for_event(
+    event_id: int,
+    current_admin: User = Depends(get_current_admin), # 💥 ADDED: Requires admin status
+    db: Session = Depends(get_db)
+):
+    registrations = RegistrationService.get_registrants_by_event_id(db, event_id=event_id)
+    return registrations
+
 
 @router.get("/{registration_id}", response_model=RegistrationResponse)
 async def get_registration(
