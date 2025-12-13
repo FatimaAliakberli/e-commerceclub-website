@@ -1,12 +1,13 @@
 from datetime import datetime
 from pydantic import BaseModel, field_validator, ConfigDict
+from typing import Optional
 
 
 class EventBase(BaseModel):
     title: str
     description: str
-    event_date: datetime
-    event_time: str
+    event_date: datetime      # Pydantic accepts full datetime string (YYYY-MM-DDTHH:MM)
+    event_time: Optional[str] = None
     location: str
     capacity: int
     registration_deadline: datetime
