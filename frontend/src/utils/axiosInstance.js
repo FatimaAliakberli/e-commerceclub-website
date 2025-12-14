@@ -2,7 +2,13 @@
 
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 
+    // 1. Check for the Next.js/Vercel public prefix
+    process.env.NEXT_PUBLIC_API_URL || 
+    // 2. Check for the standard Create React App public prefix
+    process.env.REACT_APP_API_URL || 
+    // 3. Fallback to the local development address (only used locally)
+    'http://localhost:8000';
 
 // Create a configured instance of Axios
 const axiosInstance = axios.create({
@@ -34,5 +40,6 @@ axiosInstance.interceptors.request.use(
         return Promise.reject(error);
     }
 );
+
 
 export default axiosInstance;
