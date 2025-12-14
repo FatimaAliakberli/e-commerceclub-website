@@ -132,6 +132,23 @@ async def update_profile(
     db.refresh(current_user)
     return current_user
 
+@router.get("/verify-email/{token}")
+def verify_email(token: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(
+        User.email_verification_token == token
+    ).first()
+
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid token")
+
+    user.is_verified = True
+    user.email_verification_token = None
+    db.commit()
+
+    return {"message": "Email verified successfully"}
+
+
+
 @router.post("/change-password")
 async def change_password(
     password_data: PasswordChange,

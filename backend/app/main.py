@@ -2,17 +2,18 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 from app.models import User, Event, Registration, Announcement, PageContent
-from app.routes import auth, events, registrations
+from app.routes import auth, events, registrations, profile
 
 # Create tables
 Base.metadata.create_all(bind=engine)
-
 
 app = FastAPI(
     title="E-Commerce Club API",
     description="API for University E-Commerce Club Website",
     version="1.0.0"
 )
+
+app.include_router(profile.router)
 
 # CORS configuration
 app.add_middleware(
