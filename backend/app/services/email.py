@@ -2,6 +2,7 @@ import resend
 import os
 from dotenv import load_dotenv
 
+
 load_dotenv()
 resend.api_key = os.getenv("RESEND_API_KEY")
 
@@ -49,4 +50,28 @@ async def send_registration_confirmation(email: str, user_name: str):
         return email_response
     except Exception as e:
         print(f"Error sending email: {e}")
+        return None
+
+async def send_verification_email(email: str, verification_token: str, user_name: str):
+    """Send email verification link (for email change or account verification)"""
+    verification_link = (
+        f"http://localhost:8000/api/profile/verify-email?token={verification_token}"
+    )
+
+    params = {
+        "from": "E-Commerce Club <noreply@yourdomain.com>",
+        "to": [email],
+        "subject": "Verify Your Email Address",
+        "html": f"""
+        <h2>Email Verification</h2>
+        <p>Please verify your email address by clicking the link below:</p>
+        <p><a href="{verification_link}">Verify Email</a></p>
+        <p>If you did not request this, you can safely ignore this email.</p>
+        """
+    }
+
+    try:
+        return resend.Emails.send(params)
+    except Exception as e:
+        print(f"Error sending verification email: {e}")
         return None

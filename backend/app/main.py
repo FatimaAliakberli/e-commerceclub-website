@@ -12,12 +12,13 @@ import os
 # Create tables
 Base.metadata.create_all(bind=engine)
 
-
 app = FastAPI(
     title="E-Commerce Club API",
     description="API for University E-Commerce Club Website",
     version="1.0.0"
 )
+
+app.include_router(profile.router)
 
 # CORS configuration
 app.add_middleware(
