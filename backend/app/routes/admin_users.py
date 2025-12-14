@@ -16,7 +16,7 @@ class AdminActiveUpdate(BaseModel):
     is_active: bool = Field(..., description="The new active status for the user.")
 
 
-router = APIRouter(prefix="/api/admin/users", tags=["Admin - Users"])
+router = APIRouter(prefix="/users", tags=["Admin - Users"])
 
 @router.get("/", response_model=List[UserResponse])
 async def list_all_users(
@@ -104,4 +104,5 @@ async def update_user_active_status(
     user.is_active = active_update.is_active
     db.commit()
     db.refresh(user)
+
     return user
