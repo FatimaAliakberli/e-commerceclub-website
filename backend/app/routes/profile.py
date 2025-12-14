@@ -45,12 +45,15 @@ def change_password(
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
 def delete_account(
-    confirm: bool,
+    payload: DeleteAccount,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
-    ProfileService.delete_account(db, current_user, confirm)
-
+    ProfileService.delete_account(
+        db=db,
+        user=current_user,
+        confirm=payload.confirm,
+    )
 
 @router.post("/change-email")
 async def change_email(

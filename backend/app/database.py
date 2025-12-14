@@ -5,10 +5,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Get DB URL from environment variable
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./ecommerce_club.db")
+# DB URL from environment variable
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:qLDcByHvjrsLkuQeGKrgovGqzZhRkKWZ@gondola.proxy.rlwy.net:31132/railway")
 
-# If using SQLite locally
 if DATABASE_URL.startswith("sqlite"):
     engine = create_engine(
         DATABASE_URL, connect_args={"check_same_thread": False}

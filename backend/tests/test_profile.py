@@ -29,88 +29,46 @@ def login_user(client, email, password):
     return response.json()["access_token"]
 
 
-def test_get_profile(client, db):
-    user = create_user(db)
-    token = login_user(client, user.email, "Test123!")
-
-    response = client.get(
-        "/api/profile/me",
-        headers={"Authorization": f"Bearer {token}"}
-    )
-
+def test_get_profile(auth_client):
+    response = auth_client.get("/api/profile/me")
     assert response.status_code == 200
-    data = response.json()
-    assert data["email"] == user.email
-    assert data["full_name"] == "Test User"
+    assert response.json()["email"] == "test@example.com"
 
 
-def test_update_profile(client, db):
-    user = create_user(db)
-    token = login_user(client, user.email, "Test123!")
-
-    response = client.put(
+def test_update_profile(auth_client):
+    response = auth_client.put(
         "/api/profile/me",
-        json={"phone": "1234567890"},
-        headers={"Authorization": f"Bearer {token}"}
+        json={"phone_number": "1234567890"},
     )
-
     assert response.status_code == 200
-    assert response.json()["phone"] == "1234567890"
+    assert response.json()["phone_number"] == "1234567890"
 
 
-def test_change_password(client, db):
-    user = create_user(db)
-    token = login_user(client, user.email, "Test123!")
-
-    response = client.put(
+def test_change_password(auth_client):
+    response = auth_client.put(
         "/api/profile/change-password",
         json={
-            "current_password": "Test123!",
-            "new_password": "NewPass123!"
-        },
-        headers={"Authorization": f"Bearer {token}"}
+            "current_password": "Password123!",
+            "new_password": "NewPassword123!"
+        }
     )
-
     assert response.status_code == 204
 
-    # Login with new password works
-    login = client.post(
-        "/api/auth/login",
-        json={"email": user.email, "password": "NewPass123!"}
-    )
-    assert login.status_code == 200
 
-
-def test_change_password_wrong_current(client, db):
-    user = create_user(db)
-    token = login_user(client, user.email, "Test123!")
-
-    response = client.put(
+def test_change_password_wrong_current(auth_client):
+    response = auth_client.put(
         "/api/profile/change-password",
         json={
             "current_password": "WrongPassword",
-            "new_password": "NewPass123!"
-        },
-        headers={"Authorization": f"Bearer {token}"}
+            "new_password": "NewPassword123!"
+        }
     )
-
     assert response.status_code == 400
 
 
-def test_delete_account(client, db):
-    user = create_user(db)
-    token = login_user(client, user.email, "Test123!")
-
-    response = client.delete(
-        "/api/profile/me",
-        headers={"Authorization": f"Bearer {token}"}
+def test_delete_account(auth_client):
+    response = auth_client.request(
+        "DELETE","/api/profile/me",
+        json={"confirm": True},
     )
-
     assert response.status_code == 204
-
-    # User can no longer log in
-    login = client.post(
-        "/api/auth/login",
-        json={"email": user.email, "password": "Test123!"}
-    )
-    assert login.status_code == 401

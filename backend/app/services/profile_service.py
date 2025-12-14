@@ -22,8 +22,12 @@ class ProfileService:
         if data.email:
             user.email = data.email
 
-        if data.phone_number:
-            user.phone = data.phone_number
+        if data.phone:
+            user.phone_number = data.phone
+
+        if data.full_name:
+            user.full_name = data.full_name
+
 
         db.commit()
         db.refresh(user)
