@@ -22,11 +22,11 @@ class User(Base):
     
     # 3. NEW: University Student ID (5 digits)
     # Note: Nullable=True because it's only required if is_university_student is True
-    student_id = Column(String(length=5), index=True, nullable=True) 
+    student_id = Column(String(length=15), index=True, nullable=True) 
     
     # 4. NEW: National ID/PIN (7 alphanumeric)
     # Note: Nullable=True because it's only required if is_university_student is False
-    national_id = Column(String(length=7), index=True, nullable=True) 
+    national_id = Column(String(length=15), index=True, nullable=True) 
     
     # --- END RESTORED & NEW FIELDS ---
 
