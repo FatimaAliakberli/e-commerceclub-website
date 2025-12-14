@@ -1,14 +1,10 @@
-from fastapi.testclient import TestClient
-from app.main import app
-from app.database import SessionLocal
 from app.models.user import User
 from app.utils.auth import hash_password
-import pytest
+import uuid
 
-client = TestClient(app)
-
-def create_user(email="user@test.com", password="Test123!"):
-    db = SessionLocal()
+def create_user(db, email=None, password="Test123!"):
+    if email is None:
+        email = f"user_{uuid.uuid4()}@test.com"
 
     user = User(
         email=email,
@@ -17,15 +13,14 @@ def create_user(email="user@test.com", password="Test123!"):
         is_active=True,
         is_admin=False
     )
+
     db.add(user)
     db.commit()
     db.refresh(user)
-    db.close()
-
     return user
 
 
-def login_user(email="user@test.com", password="Test123!"):
+def login_user(client, email, password):
     response = client.post(
         "/api/auth/login",
         json={"email": email, "password": password}
@@ -33,9 +28,10 @@ def login_user(email="user@test.com", password="Test123!"):
     assert response.status_code == 200
     return response.json()["access_token"]
 
-def test_get_profile():
-    create_user()
-    token = login_user()
+
+def test_get_profile(client, db):
+    user = create_user(db)
+    token = login_user(client, user.email, "Test123!")
 
     response = client.get(
         "/api/profile/me",
@@ -44,12 +40,13 @@ def test_get_profile():
 
     assert response.status_code == 200
     data = response.json()
-    assert data["email"] == "user@test.com"
+    assert data["email"] == user.email
     assert data["full_name"] == "Test User"
 
-def test_update_profile():
-    create_user()
-    token = login_user()
+
+def test_update_profile(client, db):
+    user = create_user(db)
+    token = login_user(client, user.email, "Test123!")
 
     response = client.put(
         "/api/profile/me",
@@ -60,9 +57,10 @@ def test_update_profile():
     assert response.status_code == 200
     assert response.json()["phone"] == "1234567890"
 
-def test_change_password():
-    create_user()
-    token = login_user()
+
+def test_change_password(client, db):
+    user = create_user(db)
+    token = login_user(client, user.email, "Test123!")
 
     response = client.put(
         "/api/profile/change-password",
@@ -75,16 +73,17 @@ def test_change_password():
 
     assert response.status_code == 204
 
-    # login should work with new password
+    # Login with new password works
     login = client.post(
         "/api/auth/login",
-        json={"email": "user@test.com", "password": "NewPass123!"}
+        json={"email": user.email, "password": "NewPass123!"}
     )
     assert login.status_code == 200
 
-def test_change_password_wrong_current():
-    create_user()
-    token = login_user()
+
+def test_change_password_wrong_current(client, db):
+    user = create_user(db)
+    token = login_user(client, user.email, "Test123!")
 
     response = client.put(
         "/api/profile/change-password",
@@ -97,9 +96,10 @@ def test_change_password_wrong_current():
 
     assert response.status_code == 400
 
-def test_delete_account():
-    create_user()
-    token = login_user()
+
+def test_delete_account(client, db):
+    user = create_user(db)
+    token = login_user(client, user.email, "Test123!")
 
     response = client.delete(
         "/api/profile/me",
@@ -108,9 +108,9 @@ def test_delete_account():
 
     assert response.status_code == 204
 
-    # user should no longer be able to log in
+    # User can no longer log in
     login = client.post(
         "/api/auth/login",
-        json={"email": "user@test.com", "password": "Test123!"}
+        json={"email": user.email, "password": "Test123!"}
     )
     assert login.status_code == 401
