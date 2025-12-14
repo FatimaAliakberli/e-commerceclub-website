@@ -17,7 +17,23 @@ app = FastAPI(
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173", "https://www.e-commerceclubada.xyz", "https://e-commerceclubada.xyz"],
+    allow_origins=[
+        # Development Origins
+        "http://localhost:3000", 
+        "http://localhost:5173", 
+        
+        # Production Origins (HTTPS)
+        "https://www.e-commerceclubada.xyz",
+        "https://e-commerceclubada.xyz",
+        
+        # Production Origins (HTTP - Failsafe)
+        "http://www.e-commerceclubada.xyz", 
+        "http://e-commerceclubada.xyz",
+        
+        # 💥 TRAILING SLASH VARIATIONS 💥
+        "https://www.e-commerceclubada.xyz/",
+        "https://e-commerceclubada.xyz/"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
