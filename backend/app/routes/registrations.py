@@ -1,3 +1,7 @@
+from fastapi import BackgroundTasks
+from app.models.event import Event
+from app.services.email import send_event_registration_confirmation
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
@@ -14,6 +18,7 @@ router = APIRouter(tags=["Registrations"])
 @router.post("/", response_model=RegistrationResponse, status_code=status.HTTP_201_CREATED)
 async def register_for_event(
     registration_data: RegistrationCreate,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -23,7 +28,21 @@ async def register_for_event(
         event_id=registration_data.event_id,
         user_id=current_user.id
     )
+
+    event = db.query(Event).filter(Event.id == registration_data.event_id).first()
+    if event:
+        background_tasks.add_task(
+            send_event_registration_confirmation,
+            current_user.email,
+            current_user.full_name,
+            event.title,
+            event.event_date,
+            event.event_time,
+            event.location
+        )
+
     return registration
+
 
 @router.get("/my-registrations", response_model=List[RegistrationResponse])
 async def get_my_registrations(

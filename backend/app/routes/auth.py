@@ -1,5 +1,6 @@
 # routes/auth.py 
-
+from fastapi import BackgroundTasks
+from app.services.email import send_registration_confirmation 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -16,7 +17,7 @@ from datetime import timedelta, datetime
 router = APIRouter(tags=["Authentication"])
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register(user_data: UserCreate, db: Session = Depends(get_db)):
+async def register(user_data: UserCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """Register a new user with student_id and national_id validation."""
     
     # Check if email already exists
@@ -59,6 +60,13 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     
+    #  EMAIL CONFIRMATION
+    background_tasks.add_task(
+        send_registration_confirmation,
+        new_user.email,
+        new_user.full_name
+    )
+
     return new_user # Changed return type to simply return the ORM object
 
 @router.post("/login", response_model=LoginResponse)

@@ -23,7 +23,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     # ⚠️ TEMPORARY FOR TESTING ONLY ⚠️
-    allow_origins=["https://www.e-commerceclubada.xyz"], 
+    allow_origins=["https://www.e-commerceclubada.xyz", "https://e-commerceclubada.xyz"], 
     allow_credentials=True, 
     allow_methods=["*"],
     allow_headers=["*"],
