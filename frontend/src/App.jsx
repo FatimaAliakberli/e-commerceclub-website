@@ -30,7 +30,7 @@ function App() {
 
           <Route 
             path="/admin" 
-            element={<AdminRoute element={AdminDashboard} />} // <-- NEW Protected Route
+            element={<AdminRoute element={<AdminDashboard />} />} 
           />
           
         </Routes>
