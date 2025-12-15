@@ -13,10 +13,10 @@ University E-Commerce Club management platform with event registration, admin pa
 ## Team Contributions
 | Name | Contribution |
 |------|-------------|
-| Sevda | Worked mainly on backend and database-related parts of the project, helping with data handling and server-side functionality. |
-| Fatima | Worked on frontend development and database tasks, and also contributed to hosting and deployment-related setup. |
-| Huseyn | Worked on hosting and domain configuration, integrated email sending using Resend, and provided frontend and backend support |
-| Shahd | Helped with testing the system and full-stack support, identifying issues and assisting with fixes across frontend and backend. |
+| Sevda | Worked mainly on backend and database-related parts of the project, helping with data handling and server-side functionality.|
+| Fatima | Worked on frontend development and database tasks, and also contributed to hosting and deployment-related setup.|
+| Huseyn | Worked on hosting and domain configuration, integrated email sending using Resend, and provided frontend and backend support|
+| Shahd | Helped with testing the system and full-stack support, identifying issues and assisting with fixes across frontend and backend.|
 
 
 ## Project Timeline
