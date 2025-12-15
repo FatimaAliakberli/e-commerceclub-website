@@ -38,6 +38,15 @@ class RegistrantListResponse(RegistrationResponse):
     
     # 💥 FIX: The attribute MUST be named 'user' to match the SQLAlchemy relationship
     # and its type must be the Pydantic schema for the user object.
+
+    # Core Registration fields
+    id: int
+    user_id: int
+    event_id: int
+    registered_at: datetime
+    is_cancelled: bool
+    cancelled_at: Optional[datetime]
+    
     user: UserResponse 
     
     # The other fields you had (user_name, user_email, event) should be removed 
