@@ -1,9 +1,10 @@
-// frontend/src/components/AdminRoute.jsx (WITH DEBUGGING)
+// frontend/src/components/AdminRoute.jsx (Modified)
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const AdminRoute = ({ element: Element }) => {
+// Note: Accept 'children' instead of 'element: Element'
+const AdminRoute = ({ children }) => { 
     const { isAuthenticated, isAdmin, loading } = useAuth();
     
     // 💥 IMPORTANT DEBUG LOG 💥
@@ -17,7 +18,8 @@ const AdminRoute = ({ element: Element }) => {
 
     if (isAuthenticated && isAdmin) {
         console.log("[AdminRoute] Access GRANTED.");
-        return <Element />;
+        // RENDER THE CHILDREN (which is <AdminDashboard />)
+        return children; 
     }
     
     const redirectPath = isAuthenticated ? '/' : '/login';
