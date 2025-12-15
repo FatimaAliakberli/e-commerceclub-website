@@ -55,6 +55,7 @@ def test_user(db):
         hashed_password=hash_password("Password123!"),
         full_name="Test User",
         is_admin=False,
+        is_active=True,
     )
     db.add(user)
     db.commit()

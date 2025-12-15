@@ -27,3 +27,10 @@ class PasswordChange(BaseModel):
 
 class DeleteAccount(BaseModel):
     confirm: bool
+
+class EmailChangeRequest(BaseModel):
+    new_email: EmailStr
+
+
+class MessageResponse(BaseModel):
+    message: str

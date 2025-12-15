@@ -20,13 +20,13 @@ class ProfileService:
         data: ProfileUpdate
     ) -> User:
         if data.email:
-            user.email = data.email
+            user.email = str(data.email) # type: ignore
 
         if data.phone:
-            user.phone_number = data.phone
+            user.phone = data.phone # type: ignore
 
         if data.full_name:
-            user.full_name = data.full_name
+            user.name = data.full_name # type: ignore
 
 
         db.commit()
@@ -40,13 +40,16 @@ class ProfileService:
         current_password: str,
         new_password: str
     ) -> None:
-        if not verify_password(current_password, user.hashed_password):
+        
+        hashed_password : str = user.hashed_password # type: ignore
+
+        if not verify_password(current_password, hashed_password):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Current password is incorrect"
             )
 
-        user.hashed_password = hash_password(new_password)
+        user.hashed_password = hash_password(new_password) #type: ignore
         db.commit()
 
     @staticmethod
@@ -77,12 +80,14 @@ class ProfileService:
                 detail="Email already in use"
             )
 
-        token = create_email_verification_token(user.id, new_email)
+        token = create_email_verification_token(
+            int (user.id),  # type: ignore
+             new_email)
 
         await send_verification_email(
         email=new_email,
         verification_token=token,
-        user_name = user.full_name
+        user_name = str(user.full_name)  # type: ignore
     )
     @staticmethod
     def confirm_email_change(db: Session, token: str):

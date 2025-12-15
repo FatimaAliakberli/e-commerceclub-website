@@ -5,7 +5,9 @@ from app.schemas.profile import (
     ProfileResponse,
     ProfileUpdate,
     PasswordChange,
-    DeleteAccount
+    DeleteAccount,
+    EmailChangeRequest,
+    MessageResponse
 )
 from app.services.profile_service import ProfileService
 from app.utils.dependencies import get_current_user
@@ -55,16 +57,27 @@ def delete_account(
         confirm=payload.confirm,
     )
 
-@router.post("/change-email")
-async def change_email(
-    new_email: str,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    return await ProfileService.request_email_change(db, current_user, new_email)
 
-@router.get("/verify-email")
-def verify_email(
+@router.post(
+    "/change-email",
+    response_model=MessageResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def request_email_change(
+    payload: EmailChangeRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    await ProfileService.request_email_change(
+        db=db,
+        user=current_user,
+        new_email=str(payload.new_email),
+    )
+    return {"message": "Verification email sent"}
+
+@router.get("/confirm-email-change", response_model=MessageResponse
+)
+def confirm_email_change(
     token: str,
     db: Session = Depends(get_db)
 ):

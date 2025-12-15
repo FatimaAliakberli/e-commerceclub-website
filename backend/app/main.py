@@ -2,9 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 from app.models import User, Event, Registration, Announcement, PageContent
-from app.routes import auth, events, registrations, admin_users, content, users
+from app.routes import auth, events, registrations, admin_users, content, users, profile
 
-# --- New Imports for Static File Serving (make sure these are present) ---
 from fastapi.staticfiles import StaticFiles 
 from starlette.responses import FileResponse 
 import os

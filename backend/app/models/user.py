@@ -1,5 +1,3 @@
-# app/models/user.py (REVISED)
-
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, UniqueConstraint
 from sqlalchemy.sql import func
 from app.database import Base
