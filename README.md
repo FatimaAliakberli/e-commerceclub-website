@@ -10,18 +10,14 @@ University E-Commerce Club management platform with event registration, admin pa
 - **Deployment**: Vercel (frontend), Railway (backend)
 - **Third-party**: Cloudinary, Resend
 
-## Team Members
-- [Name] - Backend Lead
-- [Name] - Frontend Lead
-- [Name] - DevOps & Integration
-- [Name] - Full-Stack Support
+## Team Contributions
+| Name | Contribution |
+|------|-------------|
+| Sevda | Worked mainly on backend and database-related parts of the project, helping with data handling and server-side functionality. |
+| Fatima | Worked on frontend development and database tasks, and also contributed to hosting and deployment-related setup. |
+| Huseyn | Worked on hosting and domain configuration, integrated email sending using Resend, and provided frontend and backend support |
+| Shahd | Helped with testing the system and full-stack support, identifying issues and assisting with fixes across frontend and backend. |
 
-## Setup Instructions
- 
-| Task | More details | Is it Done |
-|---|---|---|
-| Coudinary | Added it to the existing 'package-lock.json' and 'package.json' files in the frontend folder | Done |
-| Railway |  |  |
 
 ## Project Timeline
 Target Completion: December 15, 2024
