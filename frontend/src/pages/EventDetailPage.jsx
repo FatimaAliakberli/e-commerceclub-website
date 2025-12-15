@@ -46,7 +46,7 @@ const EventDetailPage = () => {
             try {
                 setRegListError(null);
                 // The endpoint to fetch all participants for an event (Admin only)
-                const response = await axiosInstance.get(`/api/events/${id}/participants`);
+                const response = await axiosInstance.get(`/api/registrations/event/${id}/registrants`);
                 setRegistrationsList(response.data);
             } catch (err) {
                 console.error("Failed to fetch registrants:", err);
@@ -258,5 +258,6 @@ const EventDetailPage = () => {
         </div>
     );
 };
+
 
 export default EventDetailPage;
