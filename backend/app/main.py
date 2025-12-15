@@ -4,6 +4,7 @@ from app.database import engine, Base
 from app.models import User, Event, Registration, Announcement, PageContent
 from app.routes import auth, events, registrations, admin_users, content, users, profile
 
+# --- New Imports for Static File Serving (make sure these are present)
 from fastapi.staticfiles import StaticFiles 
 from starlette.responses import FileResponse 
 import os
@@ -11,13 +12,12 @@ import os
 # Create tables
 Base.metadata.create_all(bind=engine)
 
+
 app = FastAPI(
     title="E-Commerce Club API",
     description="API for University E-Commerce Club Website",
     version="1.0.0"
 )
-
-app.include_router(profile.router)
 
 # CORS configuration
 app.add_middleware(
