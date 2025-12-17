@@ -19,11 +19,30 @@ app = FastAPI(
     version="1.0.0"
 )
 
+
+# Read allowed origins from env for local testing / deployments
+# Example: ALLOW_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,https://e-commerceclubada.xyz
+_raw_origins = os.getenv('ALLOW_ORIGINS', '').strip()
+if _raw_origins:
+    ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(',') if o.strip()]
+else:
+    # Defaults: production domains + common local dev origins
+    ALLOWED_ORIGINS = [
+        'https://www.e-commerceclubada.xyz',
+        'https://e-commerceclubada.xyz',
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:8000',
+        'http://localhost:8000'
+    ]
+
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
     # ⚠️ TEMPORARY FOR TESTING ONLY ⚠️
-    allow_origins=["https://www.e-commerceclubada.xyz", "https://e-commerceclubada.xyz"], 
+    allow_origins=ALLOWED_ORIGINS, 
     allow_credentials=True, 
     allow_methods=["*"],
     allow_headers=["*"],

@@ -57,7 +57,7 @@ function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   
   // 3. Destructure auth state and functions
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -108,6 +108,17 @@ function Navbar() {
             </Link>
           ))}
           
+
+          {/* Admin button (admins only) */}
+          {isAuthenticated && isAdmin && (
+            <Link
+              to="/admin"
+              className="hover:underline hover:text-gray-900 transition font-medium"
+            >
+              Admin
+            </Link>
+          )}
+
           {/* 5. Conditional Authentication Button/Info */}
           {isAuthenticated ? (
             // Display if logged in

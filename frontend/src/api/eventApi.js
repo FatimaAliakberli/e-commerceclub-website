@@ -43,4 +43,26 @@ export const updateEvent = async (eventId, eventData) => {
     return response.data;
 };
 
-// You can add other functions here later (e.g., updateEvent, deleteEvent, fetchAdminEvents)
+
+
+/**
+ * Fetch a single event by ID (used for Edit mode).
+ * @param {number|string} eventId
+ * @returns {Promise<object>} The event object.
+ */
+export const fetchEventById = async (eventId) => {
+    const response = await axiosInstance.get(`/api/events/${eventId}`);
+    return response.data;
+};
+
+/**
+ * Delete an event by ID (admin only).
+ * @param {number|string} eventId
+ * @returns {Promise<object>} API response (if any).
+ */
+export const deleteEvent = async (eventId) => {
+    const response = await axiosInstance.delete(`/api/events/${eventId}`);
+    return response.data;
+};
+
+// You can add other functions here later (e.g., fetchAdminEvents)

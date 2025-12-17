@@ -1,93 +1,107 @@
-// // frontend/src/pages/AdminDashboard.jsx
-
-// import React, { useState } from 'react';
-// import CreateEventForm from '../components/CreateEventForm'; // We'll create this component next
-
-// const AdminDashboard = () => {
-//     return (
-//         <div className="max-w-4xl mx-auto py-12 px-4">
-//             <h1 className="text-4xl font-bold text-indigo-700 mb-8 border-b pb-2">
-//                 Admin Dashboard
-//             </h1>
-
-//             <section className="mb-12">
-//                 <h2 className="text-3xl font-semibold text-gray-800 mb-6">
-//                     Create New Event/Course
-//                 </h2>
-//                 <CreateEventForm />
-//             </section>
-
-//             <section>
-//                 <h2 className="text-3xl font-semibold text-gray-800 mb-6">
-//                     Manage Existing Items
-//                 </h2>
-//                 <p className="text-gray-600">
-//                     (Future feature: List, edit, or delete existing events and announcements here.)
-//                 </p>
-//             </section>
-//         </div>
-//     );
-// };
-
-// export default AdminDashboard;
-
-
 // frontend/src/pages/AdminDashboard.jsx
 
-import React, { useState, useEffect } from 'react'; // 👈 Must import useEffect
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
 import CreateEventForm from '../components/CreateEventForm';
-import { useSearchParams } from 'react-router-dom'; // 👈 Must import hook for query params
-import axiosInstance from '../utils/axiosInstance'; // 👈 Must import for data fetching
+import { fetchEvents, fetchEventById, deleteEvent } from '../api/eventApi';
 
 const AdminDashboard = () => {
-    // 1. Read query parameters from the URL (e.g., ?editId=1)
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const editId = searchParams.get('editId'); // Gets the ID as a string or null
 
-    // 2. State to handle the event data if we are in Edit Mode
+    const editId = searchParams.get('editId'); // string or null
+    const isEditMode = Boolean(editId);
+
+    // Edit-mode state
     const [eventToEdit, setEventToEdit] = useState(null);
     const [loadingEvent, setLoadingEvent] = useState(false);
     const [fetchError, setFetchError] = useState(null);
 
-    // 3. Effect: Fetch Event Data for Edit Mode
-    useEffect(() => {
-        if (editId) {
-            setLoadingEvent(true);
-            setFetchError(null);
-            
-            // Fetch the existing event details using the ID from the query parameter
-            axiosInstance.get(`/api/events/${editId}`) 
-                .then(response => {
-                    setEventToEdit(response.data);
-                })
-                .catch(err => {
-                    console.error("Error fetching event for editing:", err);
-                    setFetchError(`Failed to load event ID ${editId} for editing.`);
-                })
-                .finally(() => {
-                    setLoadingEvent(false);
-                });
-        } else {
-            // If no editId is present, reset state for Create Mode
-            setEventToEdit(null);
-        }
-    }, [editId]); // Re-run when the editId query parameter changes
+    // List state
+    const [events, setEvents] = useState([]);
+    const [loadingList, setLoadingList] = useState(false);
 
-    // 4. Conditional Rendering for Loading/Error States
+    const loadEvents = async () => {
+        setLoadingList(true);
+        try {
+            const data = await fetchEvents(true, true); // include_past + include_inactive
+            setEvents(data?.events || []);
+        } catch (err) {
+            console.error('Error loading events list:', err);
+        } finally {
+            setLoadingList(false);
+        }
+    };
+
+    const loadEventForEdit = async (id) => {
+        if (!id) {
+            setEventToEdit(null);
+            return;
+        }
+
+        setLoadingEvent(true);
+        setFetchError(null);
+
+        try {
+            const data = await fetchEventById(id);
+            setEventToEdit(data);
+        } catch (err) {
+            console.error('Error fetching event for editing:', err);
+            setFetchError(`Failed to load event ID ${id} for editing.`);
+        } finally {
+            setLoadingEvent(false);
+        }
+    };
+
+    // Load list once
+    useEffect(() => {
+        loadEvents();
+    }, []);
+
+    // Load edit event when editId changes
+    useEffect(() => {
+        loadEventForEdit(editId);
+    }, [editId]);
+
+    const handleEdit = (id) => navigate(`/admin?editId=${id}`);
+
+    const handleDelete = async (id) => {
+        const ok = window.confirm('Delete this event? This cannot be undone.');
+        if (!ok) return;
+
+        try {
+            await deleteEvent(id);
+            await loadEvents();
+
+            // If you deleted the event currently in edit mode, exit edit mode.
+            if (String(editId) === String(id)) {
+                navigate('/admin');
+            }
+        } catch (err) {
+            console.error('Error deleting event:', err);
+            alert('Failed to delete event. Check console for details.');
+        }
+    };
+
+    const title = isEditMode ? `Edit Event (ID: ${editId})` : 'Create New Event/Course';
+
     if (loadingEvent) {
-        return <div className="max-w-4xl mx-auto py-12 px-4 text-center">Loading event details for modification...</div>;
+        return (
+            <div className="max-w-4xl mx-auto py-12 px-4 text-center">
+                Loading event details for modification...
+            </div>
+        );
     }
-    
+
     if (fetchError) {
-         return <div className="max-w-4xl mx-auto py-12 px-4 text-center text-red-600">Error: {fetchError}</div>;
+        return (
+            <div className="max-w-4xl mx-auto py-12 px-4 text-center text-red-600">
+                {fetchError}
+            </div>
+        );
     }
-    
-    // 5. Determine Mode and Title
-    const isEditMode = eventToEdit !== null;
-    const title = isEditMode 
-        ? `Modify Event: ${eventToEdit?.title || `ID ${editId}`}` 
-        : 'Create New Event/Course';
-    
+
     return (
         <div className="max-w-4xl mx-auto py-12 px-4">
             <h1 className="text-4xl font-bold text-indigo-700 mb-8 border-b pb-2">
@@ -98,17 +112,59 @@ const AdminDashboard = () => {
                 <h2 className="text-3xl font-semibold text-gray-800 mb-6">
                     {title}
                 </h2>
-                {/* 6. Pass the event data and mode flag to the form */}
-                <CreateEventForm eventToEdit={eventToEdit} isEditMode={isEditMode} />
+
+                <CreateEventForm
+                    eventToEdit={eventToEdit}
+                    isEditMode={isEditMode}
+                    onSuccess={async () => {
+                        await loadEvents();
+                        navigate('/admin'); // exit edit mode after save
+                    }}
+                />
             </section>
 
             <section>
                 <h2 className="text-3xl font-semibold text-gray-800 mb-6">
-                    Manage Existing Items
+                    Manage Existing Events
                 </h2>
-                <p className="text-gray-600">
-                    (Future feature: List, edit, or delete existing events and announcements here.)
-                </p>
+
+                {loadingList ? (
+                    <p className="text-gray-600">Loading events...</p>
+                ) : events.length === 0 ? (
+                    <p className="text-gray-600">No events found.</p>
+                ) : (
+                    <div className="space-y-3">
+                        {events.map((e) => (
+                            <div
+                                key={e.id}
+                                className="p-4 bg-white rounded shadow flex justify-between items-center"
+                            >
+                                <div>
+                                    <div className="font-semibold">{e.title}</div>
+                                    <div className="text-sm text-gray-600">
+                                        ID: {e.id}
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => handleEdit(e.id)}
+                                        className="px-3 py-2 bg-blue-600 text-white rounded"
+                                    >
+                                        Edit
+                                    </button>
+
+                                    <button
+                                        onClick={() => handleDelete(e.id)}
+                                        className="px-3 py-2 bg-red-600 text-white rounded"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </section>
         </div>
     );

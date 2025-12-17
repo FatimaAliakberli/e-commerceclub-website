@@ -14,7 +14,7 @@ const initialFormData = {
     image_url: '',
 };
 
-const CreateEventForm = ({ eventToEdit, isEditMode }) => {
+const CreateEventForm = ({ eventToEdit, isEditMode, onSuccess }) => {
     const [formData, setFormData] = useState(initialFormData);
     const [statusMessage, setStatusMessage] = useState(null); 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -110,6 +110,12 @@ const CreateEventForm = ({ eventToEdit, isEditMode }) => {
                 result = await createEvent(dataToSend); 
                 setStatusMessage({ type: 'success', text: `Event '${result.title}' created successfully!` });
                 setFormData(initialFormData); // Clear the form only on successful creation
+            }
+
+
+            // Let parent refresh list / exit edit mode
+            if (typeof onSuccess === 'function') {
+                await onSuccess(result);
             }
             
         } catch (error) {
